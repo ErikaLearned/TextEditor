@@ -13,6 +13,8 @@
 
 using namespace std;
 
+#define DEFAULT_MODE = ""
+
 void handleError(string message);
 bool processConfig(map<string, string> &highlight,
 				   istream &is);
