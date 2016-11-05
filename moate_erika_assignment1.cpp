@@ -11,6 +11,7 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <cctype>
 
 using namespace std;
 
@@ -19,6 +20,8 @@ using namespace std;
 void handleError(string message);
 bool processConfig(map<string, string> &highlight,
 				   ifstream &is);
+void whiteAfterStart(bool &afterStartWhiteFlag,
+					 char &nextChar);
 
 /******************************************************************************
  * Main
@@ -36,6 +39,8 @@ int main(int argc, char *argv[]) {
 	if (!ifs || !ifs.is_open()) {
 		handleError("File " + openThis + " failed to open");
 	}
+
+	processConfig(highlight, ifs);
 }
 
 
@@ -46,6 +51,23 @@ int main(int argc, char *argv[]) {
 void handleError(string message) {
 	cout << DEFAULT_MODE << message << endl;
 	exit(EXIT_FAILURE);
+}
+
+/*
+ * Prints out white space characters until no white space character is found.
+ * @param afterStartWhiteFlag is a flag indicating there was white space 
+ * following the previous character.
+ */
+void whiteAfterStart(bool &afterStartWhiteFlag,
+					 char &nextChar) {
+	if (isspace(nextChar)) {
+		afterStartWhiteFlag = true;
+	}
+	
+	while (isspace(nextChar)) {
+		cout << nextChar;
+		cin.get(nextChar);
+	}
 }
 
 /*
