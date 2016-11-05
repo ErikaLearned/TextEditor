@@ -20,9 +20,12 @@ void handleError(string message);
 bool processConfig(map<string, string> &highlight,
 				   ifstream &is);
 
+/******************************************************************************
+ * Main
+ *****************************************************************************/
 int main(int argc, char *argv[]) {
 	map<string, string> highlight;
-	string openThis = "config";
+	string openThis = "config"; // default file to open
 
 	if (argc == 2) {
 		openThis = argv[1];
@@ -30,6 +33,9 @@ int main(int argc, char *argv[]) {
 
 	ifstream ifs(openThis, ifstream::in);
 
+	if (!ifs || !ifs.is_open()) {
+		handleError("File " + openThis + " failed to open");
+	}
 }
 
 
