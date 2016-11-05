@@ -26,8 +26,7 @@ using namespace std;
 void handleError(string message);
 bool processConfig(map<string, string> &highlight,
 				   ifstream &is);
-void whiteAfterStart(bool &afterStartWhiteFlag,
-					 char &nextChar);
+void whiteAfterStart(char &nextChar);
 char escapedChar(bool &foundListFlag,
 				 char &nextChar);
 bool validCommand(string &command,
@@ -44,18 +43,34 @@ void processText(char &nextChar,
 int main(int argc, char *argv[]) {
 	map<string, string> highlight;
 	string openThis = "config"; // default file to open
+	char nextChar;
 
-	if (argc == 2) {
+	if(argc == 2) {
 		openThis = argv[1];
 	}
 
 	ifstream ifs(openThis, ifstream::in);
 
-	if (!ifs || !ifs.is_open()) {
+	if(!ifs || !ifs.is_open()) {
 		handleError("File " + openThis + " failed to open");
 	}
 
-	processConfig(highlight, ifs);
+	if(!processConfig(highlight, ifs)) {
+		handleError("Could not import " + openThis);
+	}
+
+	cin.get(nextChar);
+	while(isspace(nextChar)) {
+		cin.get(nextChar);
+	}
+
+	if(nextChar != '(') {
+		handleError("No command. First character was: " + nextChar);
+	}
+
+	cin.get(nextChar);
+	whiteAfterStart(nextChar);
+	
 }
 
 
@@ -81,16 +96,8 @@ bool validCommand(string &command,
 
 /*
  * Prints out white space characters until no white space character is found.
- *
- * @param afterStartWhiteFlag is a flag indicating there was white space 
- * following the previous character.
  */
-void whiteAfterStart(bool &afterStartWhiteFlag,
-					 char &nextChar) {
-	if (isspace(nextChar)) {
-		afterStartWhiteFlag = true;
-	}
-	
+void whiteAfterStart(char &nextChar) {
 	while (isspace(nextChar)) {
 		cout << nextChar;
 		cin.get(nextChar);
