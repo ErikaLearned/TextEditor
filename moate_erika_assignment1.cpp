@@ -99,6 +99,40 @@ char escapedChar(bool &foundListFlag,
 }
 
 /*
+ * Checks if a word contains more than one command.
+ *
+ * If more than one command is found, the string is returned.
+ * Null is returned if @param command is only one command.
+ *
+ * @param command is altered to contain one command
+ */
+string checkWord(string &command) {
+	string restOfWord;
+	stringstream ss;
+	char check, secondPara;
+	
+	if (command.size() > 0) {
+		ss.str(command);
+		command = "";
+		while (ss) {
+			ss.get(check);
+			if (check == '(' || check == ')') {
+				ss.get(secondPara);
+				if (check == secondPara) { // escape character check
+					command = command + check;
+				} else {
+					getline(ss, restOfWord);
+					return check + restOfWord;
+				}
+			} else { 
+				command = command + check;
+			}
+		}
+	}
+	return 0;
+}
+
+/*
  * Processes the configuration file for text highlighting.
  *
  * Reads in line by line. If line has at least two words, adds them to the map.
