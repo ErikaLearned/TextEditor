@@ -13,7 +13,7 @@
 
 using namespace std;
 
-#define DEFAULT_MODE = ""
+#define DEFAULT_MODE ""
 
 void handleError(string message);
 bool processConfig(map<string, string> &highlight,
@@ -37,8 +37,7 @@ int main(int argc, char *argv[]) {
  * Reverts to default mode, prints error message, and exits the program.
  */
 void handleError(string message) {
-	// do that default mode stuff
-	cout << message << endl;
+	cout << DEFAULT_MODE << message << endl;
 	exit(EXIT_FAILURE);
 }
 
