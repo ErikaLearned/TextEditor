@@ -4,6 +4,8 @@
  * Erika Moate
  * A00954431
  * Set 3O
+ *
+ * Note: Looks best with tab set to 4 spaces.
  */
 
 #include <iostream>
@@ -12,6 +14,7 @@
 #include <sstream>
 #include <map>
 #include <cctype>
+#include <vector>
 
 using namespace std;
 
@@ -29,6 +32,9 @@ char escapedChar(bool &foundListFlag,
 				 char &nextChar);
 bool validCommand(string &command,
 				  map<string,string> &commands);
+void processEnd(vector<string> &commands,
+				char &nextChar);
+string checkWord(char &nextChar);
 
 /******************************************************************************
  * Main
@@ -90,6 +96,20 @@ void whiteAfterStart(bool &afterStartWhiteFlag,
 }
 
 /*
+ * Processes possible command end.
+ */
+void processEnd(vector<string> &commands,
+				char &nextChar) {
+	cin.get(nextChar);
+	if (nextChar == ')') {
+		cout << nextChar;
+	} else {
+		commands.pop_back();
+	}
+}
+
+
+/*
  * Reset flag indicating a list start or end character was found.
  */
 char escapedChar(bool &foundListFlag,
@@ -99,37 +119,43 @@ char escapedChar(bool &foundListFlag,
 }
 
 /*
- * Checks if a word contains more than one command.
- *
- * If more than one command is found, the string is returned.
- * Null is returned if @param command is only one command.
- *
- * @param command is altered to contain one command
+ * Finds command after white space.
+ * Ensures all escaped characters are included in the command.
+ * When the function is over, @param nextChar will be the character after the
+ * command. 
  */
-string checkWord(string &command) {
-	string restOfWord;
-	stringstream ss;
-	char check, secondPara;
+string checkWord(char &nextChar) {
+	string command = 0;
+	char cur, prev = nextChar;
 	
-	if (command.size() > 0) {
-		ss.str(command);
-		command = "";
-		while (ss) {
-			ss.get(check);
-			if (check == '(' || check == ')') {
-				ss.get(secondPara);
-				if (check == secondPara) { // escape character check
-					command = command + check;
-				} else {
-					getline(ss, restOfWord);
-					return check + restOfWord;
+	cin.get(cur);
+	cin.get(nextChar);
+
+	while (!isspace(cur)) {
+		if (cur == '(' 
+			|| cur == ')') {
+				if (cur != nextChar || cur != prev) {
+					return command;
+				} else if (prev == cur) {
+					command = command + cur;
+					prev = nextChar;
+					cin.get(cur);
+					cin.get(nextChar);
 				}
-			} else { 
-				command = command + check;
-			}
+				else {
+					command = command + cur;
+					cin.get(prev);
+					cin.get(cur);
+					cin.get(nextChar);
+				}
+		} else {
+			command = command + cur + nextChar;
+			prev = nextChar;
+			cin.get(cur);
+			cin.get(nextChar);
 		}
 	}
-	return 0;
+	return command;
 }
 
 /*
