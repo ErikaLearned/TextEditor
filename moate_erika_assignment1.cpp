@@ -34,7 +34,7 @@ bool validCommand(string &command,
 void processEnd(vector<string> &commands,
 				char &nextChar);
 string checkWord(char &nextChar);
-void processText(char &nextChar,
+char processText(char &nextChar,
 				 vector<string> commands);
 
 /******************************************************************************
@@ -42,8 +42,10 @@ void processText(char &nextChar,
  *****************************************************************************/
 int main(int argc, char *argv[]) {
 	map<string, string> highlight;
+	vector<string> commands;
 	string openThis = "config"; // default file to open
-	char nextChar;
+	char nextChar, check;
+	string command;
 
 	if(argc == 2) {
 		openThis = argv[1];
@@ -70,7 +72,27 @@ int main(int argc, char *argv[]) {
 
 	cin.get(nextChar);
 	whiteAfterStart(nextChar);
-	
+	command = checkWord(nextChar);
+	if(validCommand(command, highlight)) {
+		commands.push_back(highlight[command]);
+	}
+
+	while(commands.size() > 0) {
+		command = "";
+		check = processText(nextChar, commands);
+		if(check == '(') {
+			cin.get(nextChar);
+			whiteAfterStart(nextChar);
+			command = checkWord(nextChar);
+			if(validCommand(command, highlight)) {
+				commands.push_back(highlight[command]);
+			} else {
+				handleError("Invalid command " + command);
+			}
+		} else {
+			processEnd(commands, nextChar);
+		}
+	}
 }
 
 
@@ -203,11 +225,12 @@ bool processConfig(map<string, string> &highlight,
  * Displays text according to last format in vector. 
  * Function ends when a command may start or end.
  */
-void processText(char &nextChar,
+char processText(char &nextChar,
 				 vector<string> commands) {
 	cout << commands.back();
 	while(nextChar != '(' || nextChar != ')') {
 		cout << nextChar;
 		cin.get(nextChar);
 	}
+	return nextChar;
 }
