@@ -17,11 +17,16 @@ using namespace std;
 
 #define DEFAULT_MODE ""
 
+/*
+ * Prototypes
+ */
 void handleError(string message);
 bool processConfig(map<string, string> &highlight,
 				   ifstream &is);
 void whiteAfterStart(bool &afterStartWhiteFlag,
 					 char &nextChar);
+char escapedChar(bool &foundListFlag,
+				 char &nextChar);
 
 /******************************************************************************
  * Main
@@ -55,6 +60,7 @@ void handleError(string message) {
 
 /*
  * Prints out white space characters until no white space character is found.
+ *
  * @param afterStartWhiteFlag is a flag indicating there was white space 
  * following the previous character.
  */
@@ -68,6 +74,15 @@ void whiteAfterStart(bool &afterStartWhiteFlag,
 		cout << nextChar;
 		cin.get(nextChar);
 	}
+}
+
+/*
+ * Reset flag indicating a list start or end character was found.
+ */
+char escapedChar(bool &foundListFlag,
+				 char &nextChar) {
+	foundListFlag = false;
+	return nextChar;
 }
 
 /*
