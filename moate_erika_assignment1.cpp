@@ -21,8 +21,10 @@ int main(int argc, char *argv[]) {
  * Handles errors.
  * Reverts to default mode, prints error message, and exits the program.
  */
-handleError(String message) {
+void handleError(String message) {
 	// do that default mode stuff
 	cout << message << endl;
 	exit(EXIT_FAILURE);
 }
+
+
