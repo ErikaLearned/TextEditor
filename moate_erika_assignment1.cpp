@@ -54,6 +54,8 @@ bool processConfig(map<string, string> &highlight,
 	string line, key, color;
 	stringstream ss;
 
+	highlight.clear();
+
 	while (getline(is, line)) {
 		ss.str(line);
 		if (ss >> key) {
@@ -62,4 +64,9 @@ bool processConfig(map<string, string> &highlight,
 			}
 		}
 	}
+
+	if (highlight.empty()) {
+ 		return false;
+	}
+	return true;
 }
