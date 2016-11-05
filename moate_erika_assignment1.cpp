@@ -27,6 +27,8 @@ void whiteAfterStart(bool &afterStartWhiteFlag,
 					 char &nextChar);
 char escapedChar(bool &foundListFlag,
 				 char &nextChar);
+bool validCommand(string &command,
+				  map<string,string> &commands);
 
 /******************************************************************************
  * Main
@@ -56,6 +58,17 @@ int main(int argc, char *argv[]) {
 void handleError(string message) {
 	cout << DEFAULT_MODE << message << endl;
 	exit(EXIT_FAILURE);
+}
+
+/*
+ * Is the command valid?
+ */
+bool validCommand(string &command,
+				  map<string, string> &commands) {
+	if(commands.find(command) != commands.end()) {
+		return true;
+	}
+	return false;
 }
 
 /*
