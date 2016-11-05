@@ -93,6 +93,13 @@ int main(int argc, char *argv[]) {
 			processEnd(commands, nextChar);
 		}
 	}
+
+	while(!cin.eof()) {
+		cin.get(nextChar);
+		if(!isspace(nextChar)) {
+			handleError("Characters after format ends");
+		}
+	}
 }
 
 
