@@ -1,3 +1,11 @@
+/*
+ * Text Editor
+ * 
+ * Erika Moate
+ * A00954431
+ * Set 3O
+ */
+
 #include <iostream>
 #include <string>
 
@@ -6,6 +14,7 @@ using namespace std;
 handleError(String message);
 
 int main(int argc, char *argv[]) {
+	map<String, String> highlight;
 	if (argc == 1) {
 		//process my config file
 	} else if (argc == 2) {
@@ -27,4 +36,9 @@ void handleError(String message) {
 	exit(EXIT_FAILURE);
 }
 
-
+/*
+ * Processes the configuration file for text highlighting.
+ */
+bool processConfig(map<String, String> &highlight) {
+	
+}
