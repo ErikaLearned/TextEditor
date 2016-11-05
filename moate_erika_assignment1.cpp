@@ -7,6 +7,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sstream>
 #include <map>
@@ -17,17 +18,17 @@ using namespace std;
 
 void handleError(string message);
 bool processConfig(map<string, string> &highlight,
-				   istream &is);
+				   ifstream &is);
 
 int main(int argc, char *argv[]) {
 	map<string, string> highlight;
-	if (argc == 1) {
-		//process my config file
-	} else if (argc == 2) {
-		//process the input config
-	} else {
-		handleError("In Main: Invalid command line arguments");
+	string openThis = "config";
+
+	if (argc == 2) {
+		openThis = argv[1];
 	}
+
+	ifstream ifs(openThis, ifstream::in);
 
 }
 
@@ -52,7 +53,7 @@ void handleError(string message) {
  * bold  \e[0;31m  #red
  */
 bool processConfig(map<string, string> &highlight,
-				   iostream &is) {
+				   ifstream &is) {
 	string line, key, color;
 	stringstream ss;
 
@@ -65,8 +66,8 @@ bool processConfig(map<string, string> &highlight,
 				highlight.insert(pair<string, string>(key, color.replace(0, 2, "\033")));
 			}
 		}
-	}
-
+	}	
+	
 	if (highlight.empty()) {
  		return false;
 	}
