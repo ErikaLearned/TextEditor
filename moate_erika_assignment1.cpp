@@ -9,13 +9,16 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <map>
 
 using namespace std;
 
-handleError(String message);
+void handleError(string message);
+bool processConfig(map<string, string> &highlight,
+				   istream &is);
 
 int main(int argc, char *argv[]) {
-	map<String, String> highlight;
+	map<string, string> highlight;
 	if (argc == 1) {
 		//process my config file
 	} else if (argc == 2) {
@@ -31,7 +34,7 @@ int main(int argc, char *argv[]) {
  * Handles errors.
  * Reverts to default mode, prints error message, and exits the program.
  */
-void handleError(String message) {
+void handleError(string message) {
 	// do that default mode stuff
 	cout << message << endl;
 	exit(EXIT_FAILURE);
@@ -44,18 +47,19 @@ void handleError(String message) {
  * If the key exits in the map, nothing is inserted.
  *
  * Example input line:
- * bold  \e[0;31m  #red
+ * bold  \033[0;31m  #red
  */
-bool processConfig(const map<String, String> &highlight
-				   ifstream &is) {
-	String line, key, color;
+bool processConfig(map<string, string> &highlight,
+				   iostream &is) {
+	string line, key, color;
 	stringstream ss;
 
 	while (getline(is, line)) {
 		ss.str(line);
 		if (ss >> key) {
 			if (ss >> color) {
-				highlight.insert(pair<String, String>(key, color));
+				highlight.insert(pair<string, string>(key, color.replace(0, 2, "\033")));
 			}
+		}
 	}
 }
