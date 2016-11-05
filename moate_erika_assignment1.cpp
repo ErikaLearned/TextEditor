@@ -44,10 +44,11 @@ void handleError(string message) {
  * Processes the configuration file for text highlighting.
  *
  * Reads in line by line. If line has at least two words, adds them to the map.
- * If the key exits in the map, nothing is inserted.
+ * If the key exists in the map, nothing is inserted.
+ * The second string must start with \e. \e is replaced with \003.
  *
  * Example input line:
- * bold  \033[0;31m  #red
+ * bold  \e[0;31m  #red
  */
 bool processConfig(map<string, string> &highlight,
 				   iostream &is) {
