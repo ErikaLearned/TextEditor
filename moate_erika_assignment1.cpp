@@ -35,6 +35,8 @@ bool validCommand(string &command,
 void processEnd(vector<string> &commands,
 				char &nextChar);
 string checkWord(char &nextChar);
+void processText(char &nextChar,
+				 vector<string> commands);
 
 /******************************************************************************
  * Main
@@ -188,4 +190,17 @@ bool processConfig(map<string, string> &highlight,
  		return false;
 	}
 	return true;
+}
+
+/*
+ * Displays text according to last format in vector. 
+ * Function ends when a command may start or end.
+ */
+void processText(char &nextChar,
+				 vector<string> commands) {
+	cout << commands.back();
+	while(nextChar != '(' || nextChar != ')') {
+		cout << nextChar;
+		cin.get(nextChar);
+	}
 }
