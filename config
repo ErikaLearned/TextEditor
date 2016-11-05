@@ -1,0 +1,11 @@
+bold			\e[0;31m	#red
+italic			\e[0;34m	#blue
+underline		\e[0;32m	#green
+normal			\e[0;37m	#grey
+color(brown)	\e[0;33m	
+color(red)		\e[0;31m	
+color(blue)		\e[0;34m	
+color(grey)		\e[0;37m	
+color(black)	\e[0;31m
+color(purple)	\e[0;35m
+color(cyan)		\e[0;36m
