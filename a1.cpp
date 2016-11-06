@@ -4,8 +4,6 @@
  * Erika Moate
  * A00954431
  * Set 3O
- *
- * Note: Looks best with tab set to 4 spaces.
  */
 
 #include <iostream>
@@ -13,10 +11,7 @@
 #include <string>
 #include <sstream>
 #include <map>
-#include <cctype>
 #include <vector>
-#include <algorithm>
-#include <iterator>
 
 using namespace std;
 
@@ -25,158 +20,176 @@ using namespace std;
 /*
  * Prototypes
  */
+void handleError(string message,
+                 int &lineCount);
 void handleError(string message);
 bool processConfig(map<string, string> &highlight,
-				   ifstream &is);
-void whiteAfterStart(char &nextChar);
+                   ifstream &is);
+void whiteAfterStart(char &nextChar,
+                     int &lineCount);
 char escapedChar(bool &foundListFlag,
-				 char &nextChar);
+                 char &nextChar);
 bool validCommand(string &command,
-				  map<string,string> &commands);
+                  map<string,string> &commands);
 void processEnd(vector<string> &commands,
-				char &nextChar);
+                char &nextChar);
 void checkWord(char &nextChar,
-			   string &command);
+               string &command);
 char processText(char &nextChar,
-				 vector<string> commands);
+                 int &lineCount);
 string fromMap(string &command,
-			   map<string, string> &commands);
+               map<string, string> &commands);
 void skipWhiteSpace(char &nextChar);
 bool escapeChar(char &nextChar,
-				char &prev);
+                char &prev);
 
 /******************************************************************************
  * Main
  *****************************************************************************/
 int main(int argc, char *argv[]) {
-	map<string, string> highlight;
-	vector<string> commands;
-	string openThis = "config"; // default file to open
-	char nextChar, check;
-	string value;
-	string command = " ";
-	if(argc == 2) {
-		openThis = argv[1];
-	}
+    map<string, string> highlight;
+    vector<string> commands;
+    string openThis = "config"; // default file to open
+    char nextChar, check;
+    string value;
+    string command = " ";
+    int lineCount = 1;
+    if(argc == 2) {
+        openThis = argv[1];
+    }
 
-	ifstream ifs(openThis, ifstream::in);
-	
-	if(!ifs || !ifs.is_open()) {
-		handleError("File " + openThis + " failed to open");
-	}
+    ifstream ifs(openThis, ifstream::in);
+    
+    if(!ifs || !ifs.is_open()) {
+        handleError("File " + openThis + " failed to open");
+    }
 
-	if(!processConfig(highlight, ifs)) {
-		handleError("Could not import " + openThis);
-	}
-	
-	#ifdef DEBUG
-	map<string, string>::iterator it = highlight.begin();
-	while(it != highlight.end()) {
-		cout << it->second << "(" << it->first << ")" << endl;
-		it++;
-	}
-	
-	return 0;
-	#endif
+    if(!processConfig(highlight, ifs)) {
+        handleError("Could not import " + openThis);
+    }
+    
+    #ifdef DEBUG
+    map<string, string>::iterator it = highlight.begin();
+    while(it != highlight.end()) {
+        cout << it->second << "(" << it->first << ")" << endl;
+        it++;
+    }
+    
+    return 0;
+    #endif
 
-	cin.get(nextChar);
-	skipWhiteSpace(nextChar);
-	
-	if(nextChar != '(') {
-		handleError("No command. First character was: " + nextChar);
-	}
-	
-	cin.get(nextChar);
-	whiteAfterStart(nextChar);
-	checkWord(nextChar, command);
-	string command2 = command.substr(1, command.size());
-	if(validCommand(command2, highlight)) {
-		value = highlight.at(command2);
-		commands.push_back(move(value));
-	} 
-	skipWhiteSpace(nextChar);
-	cout << commands.back();
-	while(commands.size() > 0) {
-		command = " ";
-		command2 = "";
-		check = processText(nextChar, commands);
-		if(check == '(') {
-			cin.get(nextChar);
-			whiteAfterStart(nextChar);
-			command2 = nextChar;
-			if (!escapeChar(nextChar, check)) {
-				checkWord(nextChar, command);
-				command2 += command.substr(2, command.size());
-				if(validCommand(command2, highlight)) {
-					skipWhiteSpace(nextChar);
-					value = highlight.at(command2);
-					commands.push_back(value);
-					cout << commands.back();
-				} else {
-					handleError("Invalid command " + command);
-				}
-			} else {
-				cin.get(nextChar);
-			}
-		} else {
-			processEnd(commands, nextChar);
-		}
-	} 
-	while(!cin.eof()) {
-		cin.get(nextChar);
-		if(!isspace(nextChar)) {
-			handleError("Characters after format ends");
-		}
-	}
+    cin.get(nextChar);
+    skipWhiteSpace(nextChar);
+    
+    if(nextChar != '(') {
+        handleError("No command. First character was: " + nextChar, lineCount);
+    }
+    
+    cin.get(nextChar);
+    whiteAfterStart(nextChar, lineCount);
+    checkWord(nextChar, command);
+    string command2 = command.substr(1, command.size());
+    if(validCommand(command2, highlight)) {
+        value = highlight.at(command2);
+        commands.push_back(move(value));
+    } 
+    skipWhiteSpace(nextChar);
+    cout << commands.back();
+    while(commands.size() > 0) {
+        command = " ";
+        command2 = "";
+        check = processText(nextChar, lineCount);
+        if(check == '(') {
+            cin.get(nextChar);
+            whiteAfterStart(nextChar, lineCount);
+            command2 = nextChar;
+            if (!escapeChar(nextChar, check)) {
+                checkWord(nextChar, command);
+                command2 += command.substr(2, command.size());
+                if(validCommand(command2, highlight)) {
+                    skipWhiteSpace(nextChar);
+                    value = highlight.at(command2);
+                    commands.push_back(value);
+                    cout << commands.back();
+                } else {
+                    handleError("Invalid command " + command, lineCount);
+                }
+            } else {
+                cin.get(nextChar);
+            }
+        } else {
+            processEnd(commands, nextChar);
+        }
+    } 
+    while(!cin.eof()) {
+        cin.get(nextChar);
+        if(!isspace(nextChar)) {
+            handleError("Characters after format ends", lineCount);
+        }
+    }
 }
 
+
+/*
+ * Handles errors.
+ * Reverts to default mode, prints error message with line, and exits the program.
+ */
+void handleError(string message,
+                 int &lineCount) {
+    cout << DEFAULT_MODE << message << " at Line " << lineCount << endl;
+    exit(EXIT_FAILURE);
+}
 
 /*
  * Handles errors.
  * Reverts to default mode, prints error message, and exits the program.
  */
 void handleError(string message) {
-	cout << DEFAULT_MODE << message << endl;
-	exit(EXIT_FAILURE);
+    cout << DEFAULT_MODE << message << endl;
+    exit(EXIT_FAILURE);
 }
 
 /*
  * Is the command valid?
  */
 bool validCommand(string &command,
-				  map<string, string> &commands) {
-	if(commands.find(command) != commands.end()) {
-		return true;
-	}
-	return false;
+                  map<string, string> &commands) {
+    if(commands.find(command) != commands.end()) {
+        return true;
+    }
+    return false;
 }
 
 /*
  * Return map value.
  */
 string fromMap(string &command,
-			   map<string, string> &commands) {
-	map<string, string>::const_iterator pos = commands.find(command);
-	return pos->second;
+               map<string, string> &commands) {
+    map<string, string>::const_iterator pos = commands.find(command);
+    return pos->second;
 }
 
 /*
  * Prints out white space characters until no white space character is found.
  */
-void whiteAfterStart(char &nextChar) {
-	while (isspace(nextChar)) {
-		cout << nextChar;
-		cin.get(nextChar);
-	}
+void whiteAfterStart(char &nextChar,
+                     int &lineCount) {
+    while (isspace(nextChar)) {
+        if(nextChar == '\n') {
+            lineCount++;
+        }
+        cout << nextChar;
+        cin.get(nextChar);
+    }
 }
 
 /*
  * Skips white space.
  */
 void skipWhiteSpace(char &nextChar) {
-	while(isspace(nextChar)) {
-		cin.get(nextChar);
-	}
+    while(isspace(nextChar)) {
+        cin.get(nextChar);
+    }
 }
 
 /*
@@ -184,30 +197,30 @@ void skipWhiteSpace(char &nextChar) {
  * Returns true if there is an escaped character.
  */
 bool escapeChar(char &nextChar, char &prev) {
-	if(nextChar == prev) {
-		cout << nextChar;
-		return true;
-	}
-	return false;
+    if(nextChar == prev) {
+        cout << nextChar;
+        return true;
+    }
+    return false;
 }
 
 /*
  * Processes possible command end.
  */
 void processEnd(vector<string> &commands,
-				char &nextChar) {
-	//cout << endl << "start " << nextChar << endl;
-	cin.get(nextChar);
-	//cout << "next " << nextChar << endl;
-	if (nextChar == ')') {
-		cout << nextChar;
-		cin.get(nextChar);
-	} else {
-		commands.pop_back();
-		if(commands.size() > 0) {
-			cout << commands.back();
-		}
-	}
+                char &nextChar) {
+    //cout << endl << "start " << nextChar << endl;
+    cin.get(nextChar);
+    //cout << "next " << nextChar << endl;
+    if (nextChar == ')') {
+        cout << nextChar;
+        cin.get(nextChar);
+    } else {
+        commands.pop_back();
+        if(commands.size() > 0) {
+            cout << commands.back();
+        }
+    }
 }
 
 /*
@@ -217,21 +230,21 @@ void processEnd(vector<string> &commands,
  * command. 
  */
 void checkWord(char &nextChar,
-			   string &command) {
-	char next;
-	while (!isspace(nextChar)) {
-		if(nextChar == '(' || nextChar == ')') {
-			cin.get(next);
-			if(next == nextChar) {
-				command += next;
-			} else {
-				return;
-			}
-		} else {
-			command += nextChar;
-		}
-		cin.get(nextChar);
-	}
+               string &command) {
+    char next;
+    while (!isspace(nextChar)) {
+        if(nextChar == '(' || nextChar == ')') {
+            cin.get(next);
+            if(next == nextChar) {
+                command += next;
+            } else {
+                return;
+            }
+        } else {
+            command += nextChar;
+        }
+        cin.get(nextChar);
+    }
 }
 
 /*
@@ -245,25 +258,25 @@ void checkWord(char &nextChar,
  * bold  \e[0;31m  #red
  */
 bool processConfig(map<string, string> &highlight,
-				   ifstream &is) {
-	string line, key, color;
-	stringstream ss;
+                   ifstream &is) {
+    string line, key, color;
+    stringstream ss;
 
-	highlight.clear();
+    highlight.clear();
 
-	while (getline(is, line)) {
-		ss.str(line);
-		if (ss >> key) {
-			if (ss >> color) {
-				highlight.insert(pair<string, string>(key, color.replace(0, 2, "\033")));
-			}
-		}
-	}	
-	
-	if (highlight.empty()) {
- 		return false;
-	}
-	return true;
+    while (getline(is, line)) {
+        ss.str(line);
+        if (ss >> key) {
+            if (ss >> color) {
+                highlight.insert(pair<string, string>(key, color.replace(0, 2, "\033")));
+            }
+        }
+    }    
+    
+    if (highlight.empty()) {
+         return false;
+    }
+    return true;
 }
 
 /*
@@ -271,11 +284,14 @@ bool processConfig(map<string, string> &highlight,
  * Function ends when a command may start or end.
  */
 char processText(char &nextChar,
-				 vector<string> commands) {
-	while(nextChar != '(' && nextChar != ')') {
-		cout << nextChar;
-		cin.get(nextChar);
-	}
-	return nextChar;
+                 int &lineCount) {
+    while(nextChar != '(' && nextChar != ')') {
+	if(nextChar == '\n') {
+            lineCount++;
+        }
+        cout << nextChar;
+        cin.get(nextChar);
+    }
+    return nextChar;
 }
 
